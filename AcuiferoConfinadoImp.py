@@ -24,7 +24,7 @@ T = K*b #Value assumed, mean value of Clay
 Ss = st.slider('Seleccione el valor de coeficiente de almacenamiento (Ss) [1/m]',0.000006,0.002,0.0011,0.00001, format='%f')
 S = Ss*b #Storage Coeficient
 Dh = T/S #Hydraulic Diffusivity
-st.markdown('El valor de difusividad hidráulica es: '+str(round(Dh,2))+'d/m$^2$')
+st.markdown('El valor de difusividad hidráulica es: '+str(round(Dh,2))+' d/m$^2$.')
 
 #Discretize the problem
 st.header('Discretización del problema numérico')

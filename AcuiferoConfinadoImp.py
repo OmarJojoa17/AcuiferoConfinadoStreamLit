@@ -19,9 +19,9 @@ st.markdown('La potencia del acuífero es: '+str(b)+' m.')
 
 #Values from streamlit
 st.header('Valores seleccionados por el usuario')
-K = st.slider('Seleccione el valor de conductividad hidráulica (K) [m/d]', 0.00007,1.4,0.5, 0.001, format='%f')
+K = st.slider('Seleccione el valor de conductividad hidráulica (K) [m/d]:', 0.00007,1.4,0.5, 0.001, format='%f')
 T = K*b #Value assumed, mean value of Clay
-Ss = st.slider('Seleccione el valor de coeficiente de almacenamiento (Ss) [1/m]',0.000006,0.002,0.0011,0.00001, format='%f')
+Ss = st.slider('Seleccione el valor de coeficiente de almacenamiento (Ss) [1/m]:',0.000006,0.002,0.0011,0.00001, format='%f')
 S = Ss*b #Storage Coeficient
 Dh = T/S #Hydraulic Diffusivity
 st.markdown('El valor de difusividad hidráulica es: '+str(round(Dh,2))+' d/m$^2$.')

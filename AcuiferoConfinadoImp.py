@@ -5,26 +5,26 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+from PIL import Image
 
-st.title('Solución numérica por diferencias finitas para acuifero confinado')
+st.title('Solución numérica por diferencias finitas para acuifero confinado en estado transitorio')
 
-st.latex(r'''\frac{∂ h^2}{∂ x^2} ± \frac{w}{S} = \frac{S}{T} \frac{∂ h}{∂ t}''')
+st.latex(r''' T \frac{∂ h^2}{∂ x^2} ± w = S \frac{∂ h}{∂ t}''')
 
-#Fix values
-st.header('Valores fijos')
-L = 30 #length [m]
-b = 10 #acuifer's power [m]
-st.markdown('Longitud entre el acuifero y el río es: '+str(L)+' m.')
-st.markdown('La potencia del acuífero es: '+str(b)+' m.')
+image = Image.open('Esquema.jpg')
+st.image(image, caption='Esquema del problema')
 
 #Values from streamlit
 st.header('Valores seleccionados por el usuario')
-K = st.slider('Seleccione el valor de conductividad hidráulica (K) [m/d]:', 0.00007,1.4,0.5, 0.001, format='%f')
+L = st.slider('Seleccione el valor de longitud (L) [m]', 1,100,30,1)
+b = st.slider('Seleccione el valor de potencia (b) [m]', 1,100,10,1)
+w = st.slider('Seleccione el valor de recarga (w) [m/d]', -0.0010,0.0010,0.0005,0.0001, format='%f')
+K = st.slider('Seleccione el valor de conductividad hidráulica (K) [m/d]', 0.001,200.0,5.0, 0.1, format='%f')
 T = K*b #Value assumed, mean value of Clay
-Ss = st.slider('Seleccione el valor de coeficiente de almacenamiento (Ss) [1/m]:',0.000006,0.002,0.0011,0.00001, format='%f')
+Ss = st.slider('Seleccione el valor de coeficiente de almacenamiento (Ss) [1/m]',0.000006,0.002,0.0011,0.00001, format='%f')
 S = Ss*b #Storage Coeficient
 Dh = T/S #Hydraulic Diffusivity
-st.markdown('El valor de difusividad hidráulica es: '+str(round(Dh,2))+' d/m$^2$.')
+st.markdown('El valor de difusividad hidráulica es: '+str(round(Dh,2)))
 
 #Discretize the problem
 st.header('Discretización del problema numérico')
@@ -33,6 +33,7 @@ x = np.arange(0,L) #values in x
 dx = L/(N-1) #Delta x
 st.markdown('Número de nodos: '+str(N)+'.')
 st.markdown('Intervalo de cálculo en x (dx) [m]: '+str(dx)+'.')
+W = w/S
 
 #Initial conditions
 st.header('Condiciones iniciales y de borde del problema')
@@ -66,12 +67,12 @@ def acuifero_confinado(N:int, h0:int, Dh:float, dt:float, dx:float, Hsol:list, t
                 b[i] = h0
             #Node x=L
             elif i==N-1:
-                A[i][i] = 1+Dh*dt/dx**2
+                A[i][i] = 1+Dh*dt/dx**2+dt*W
                 A[i][i-1] = -Dh*dt/dx**2
                 b[i] = H[i]
             #Central nodes
             else:
-                A[i][i] = 1+2*Dh*dt/dx**2
+                A[i][i] = 1+2*Dh*dt/dx**2+dt*W
                 A[i][i+1] = -Dh*dt/dx**2
                 A[i][i-1] = -Dh*dt/dx**2
                 b[i] = H[i]
@@ -109,12 +110,13 @@ for i in range(len(tfin)):
 
 Hsol = Hsol[:b]
 tsol = tsol[:b]
-st.markdown('El tiempo para el cual el acuífero alcanza un equilibrio es: '+str(round(b*dt,0))+' días.')
+st.markdown('El tiempo para el cual el acuífero alcanza un equilibrio es: '+str(round(b*dt,2))+' días.')
 
+st.header('Solución gráfica')
 Hsol2=pd.DataFrame(Hsol)
 tsel = st.slider('Seleccione el tiempo para el cual desea ver el perfil de agua: ',0.1,float(b-1),float(b-1),float(dt), format='%f')
 plt.plot(Hsol2.columns,Hsol[int(tsel)])
 plt.ylim(0,8.1)
 st.pyplot(plt)
 
-st.markdown('Code developed by: Omar David Jojoa Ávila.')
+st.markdown('Code developed by: Omar David Jojoa Ávila & Estiveen Rodríguez Quintero.')

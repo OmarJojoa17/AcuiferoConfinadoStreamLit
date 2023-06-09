@@ -8,7 +8,7 @@ import streamlit as st
 
 st.title('Solución numérica por diferencias finitas para acuifero confinado')
 
-st.latex(r'''\frac{∂ h^2}{∂ x^2} ± w = \frac{S}{T} \frac{∂ h}{∂ t}''')
+st.latex(r'''\frac{∂ h^2}{∂ x^2} ± w/T = \frac{S}{T} \frac{∂ h}{∂ t}''')
 
 #Fix values
 st.header('Valores fijos')
